@@ -1,18 +1,21 @@
-// backend/server.ts
 import express, { Request, Response } from 'express';
 import multer from 'multer';
 import cors from 'cors';
+import { SpeechClient } from '@google-cloud/speech';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Path to your Google Cloud credentials
+process.env.GOOGLE_APPLICATION_CREDENTIALS = "path/to/your/google-cloud-service-account.json";
+
 const app = express();
+const speechClient = new SpeechClient();
+const upload = multer({ storage: multer.memoryStorage() });
+
 app.use(cors());
 app.use(express.json());
 
-const upload = multer({ dest: 'uploads/' });
-
-// Add this array at the top of your server.ts file
 const interviewQuestions = [
     "Describe a time when you had to adjust to a colleague’s working style in order to complete a project or achieve your objectives.",
     "How do you handle changes in the workplace?",
@@ -45,23 +48,46 @@ const interviewQuestions = [
     "Describe a time when you were under a lot of pressure at work. How did you handle it?",
     "Give an example of how you handle the stress of tight deadlines."
   ];
-  
-  app.get('/questions', (req: Request, res: Response) => {
-      res.json({ questions: interviewQuestions });
-  });
-  
 
+// Endpoint to get interview questions
+app.get('/questions', (req: Request, res: Response) => {
+  res.json({ questions: interviewQuestions });
+});
+
+// Endpoint to handle audio transcription
 app.post('/transcribe', upload.single('audio'), async (req: Request, res: Response) => {
-    // Mock transcription logic
-    console.log('Received audio file:', req.file);
-    res.json({ transcript: 'Transcribed text goes here...' });
-});
+    if (!req.file) {
+      return res.status(400).send('No audio file uploaded.');
+    }
+  
+    const audioBytes = req.file.buffer.toString('base64');
+    const audio = {
+      content: audioBytes,
+    };
+    const config = {
+      encoding: 'LINEAR16' as const, // Change here to match the actual type
+      sampleRateHertz: 16000,
+      languageCode: 'en-US',
+    };
+    const request = {
+      audio: audio,
+      config: config,
+    };
+  
+    try {
+      const [response] = await speechClient.recognize(request);
+      const transcription = response.results!
+        .map((result: any) => result.alternatives[0].transcript)
+        .join('\n');
+      res.json({ transcript: transcription });
+    } catch (error) {
+      console.error('Speech-to-text error:', error);
+      res.status(500).send('Error processing the audio file.');
+    }
+  });
 
-app.post('/analyze', express.json(), async (req: Request, res: Response) => {
-    // Mock analysis logic
-    console.log('Received text for analysis:', req.body.transcript);
-    res.json({ analysis: 'Analysis results go here...' });
-});
-
+// Define the port number and start the server
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});

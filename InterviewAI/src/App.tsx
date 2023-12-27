@@ -34,7 +34,7 @@ function App() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div className="w-full h-full items-center justify-center">
       <div>
         {currentState === "start" && (
           <Start
@@ -43,7 +43,7 @@ function App() {
             questions={questions} // Pass the list of questions
           />
         )}
-        {/* {currentState === "respond" && (
+        {currentState === "respond" && (
           <Respond
             setCurrentState={setCurrentState}
             question={question}
@@ -51,7 +51,7 @@ function App() {
             setFeedback={setFeedback}
           />
         )}
-        {currentState === "results" && (
+        {/* {currentState === "results" && (
           <Results
             setCurrentState={setCurrentState}
             question={question}

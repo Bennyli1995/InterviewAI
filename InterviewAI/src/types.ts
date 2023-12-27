@@ -5,3 +5,10 @@ export interface StartProps {
   setQuestion: (question: string) => void;
   questions: string[];
 }
+
+export interface RespondProps {
+  setCurrentState: (state: string) => void;
+  question: string;
+  setUserAnswer: (answer: string) => void;
+  setFeedback: (feedback: object) => void;
+}

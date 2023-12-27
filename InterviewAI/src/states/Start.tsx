@@ -1,4 +1,3 @@
-import React from "react";
 import logo from "../resources/artificial-intelligence-recruitment.jpg";
 
 interface StartProps {
@@ -19,7 +18,7 @@ export function Start({ setCurrentState, setQuestion, questions }: StartProps) {
 
   return (
     <div
-      className="flex flex-col items-center justify-center w-full h-screen bg-cover bg-no-repeat"
+      className="flex flex-1 flex-col items-center justify-center min-w-full min-h-screen bg-cover bg-center bg-no-repeat"
       style={{ backgroundImage: `url(${logo})` }}
     >
       <div className="text-center p-5 bg-white bg-opacity-70 rounded-lg shadow-md">
