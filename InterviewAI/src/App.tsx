@@ -1,66 +1,64 @@
-import { useState } from "react";
-import "./App.css";
+import { useState, useEffect } from "react";
 import { Respond } from "./states/Respond";
 import { Results } from "./states/Results";
 import { Start } from "./states/Start";
-
-type possibleState = "start" | "respond" | "results";
-
-// helper function for openai calls
-class CustomFormData extends FormData {
-  getHeaders() {
-    return {};
-  }
-}
+import { PossibleState } from "./types";
 
 function App() {
-  const [currentState, setCurrentState] = useState<possibleState>("start");
-  const [question, setQuestion] = useState<string>(
-    "tell me about a time you had to face criticism"
-  );
-  const [userAnswer, setUserAnswer] = useState<string>(undefined);
-  const [feedback, setFeedback] = useState<object>(undefined);
+  const [currentState, setCurrentState] = useState<PossibleState>("start");
+  const [question, setQuestion] = useState<string>("");
+  const [userAnswer, setUserAnswer] = useState<string>("");
+  const [feedback, setFeedback] = useState<object>({});
+  const [questions, setQuestions] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
-  const [configuration, dontUse] = useState(
-    new Configuration({
-      apiKey: "ENTER KEY HERE",
-      formDataCtor: CustomFormData,
-    })
-  );
+  useEffect(() => {
+    fetch("http://localhost:3001/questions")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.questions && data.questions.length > 0) {
+          setQuestions(data.questions);
+          setQuestion(data.questions[0]); // Set a default question
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching questions:", err);
+        setError("Failed to fetch questions");
+        setLoading(false);
+      });
+  }, []);
 
-  const [openai, alsoDontUse] = useState(new OpenAIApi(configuration));
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
-    // div for whole page
-    <div className="w-[100vw] h-[100vh] flex items-center align-middle justify-center">
+    <div className="w-full h-full flex items-center justify-center">
       <div>
-        {currentState === "start" ? (
+        {currentState === "start" && (
           <Start
             setCurrentState={setCurrentState}
-            question={question}
             setQuestion={setQuestion}
+            questions={questions} // Pass the list of questions
           />
-        ) : currentState === "respond" ? (
+        )}
+        {/* {currentState === "respond" && (
           <Respond
             setCurrentState={setCurrentState}
             question={question}
             setUserAnswer={setUserAnswer}
             setFeedback={setFeedback}
-            configuration={configuration}
-            openai={openai}
           />
-        ) : currentState === "results" ? (
+        )}
+        {currentState === "results" && (
           <Results
             setCurrentState={setCurrentState}
             question={question}
             userAnswer={userAnswer}
             feedback={feedback}
-            configuration={configuration}
-            openai={openai}
           />
-        ) : (
-          <p>invalid state</p>
-        )}
+        )} */}
       </div>
     </div>
   );
