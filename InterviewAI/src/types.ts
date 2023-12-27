@@ -10,5 +10,15 @@ export interface RespondProps {
   setCurrentState: (state: string) => void;
   question: string;
   setUserAnswer: (answer: string) => void;
-  setFeedback: (feedback: object) => void;
+}
+
+export interface ResultsProps {
+  setCurrentState: (state: string) => void;
+  question: string;
+  userAnswer: string;
+}
+
+export interface FeedbackResponse {
+  rating: number;
+  feedback: string;
 }

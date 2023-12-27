@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Respond } from "./states/Respond";
-import { Results } from "./states/Results";
+import Results from "./states/Results";
 import { Start } from "./states/Start";
 import { PossibleState } from "./types";
 
@@ -8,7 +8,7 @@ function App() {
   const [currentState, setCurrentState] = useState<PossibleState>("start");
   const [question, setQuestion] = useState<string>("");
   const [userAnswer, setUserAnswer] = useState<string>("");
-  const [feedback, setFeedback] = useState<object>({});
+  // const [feedback, setFeedback] = useState<object>({});
   const [questions, setQuestions] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
@@ -48,17 +48,15 @@ function App() {
             setCurrentState={setCurrentState}
             question={question}
             setUserAnswer={setUserAnswer}
-            setFeedback={setFeedback}
           />
         )}
-        {/* {currentState === "results" && (
+        {currentState === "results" && (
           <Results
             setCurrentState={setCurrentState}
             question={question}
             userAnswer={userAnswer}
-            feedback={feedback}
           />
-        )} */}
+        )}
       </div>
     </div>
   );

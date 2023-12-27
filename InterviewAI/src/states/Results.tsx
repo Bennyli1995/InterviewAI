@@ -1,65 +1,84 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { ResultsProps } from "../types";
 
-export function Results(props) {
-  const [apiResponse, setapiResponse] = useState(null);
-  const [feedback, setFeedback] = useState(null);
-  const [rating, setRating] = useState();
-  const [debug, setDebug] = useState(false);
-
-  //feedback, rating
+const Results: React.FC<ResultsProps> = ({
+  setCurrentState,
+  question,
+  userAnswer,
+}) => {
+  const [feedbackData, setFeedbackData] = useState<{
+    rating: number;
+    feedback: string;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
-    (async function () {
-      const response = await props.openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: `You are the interviewer at a company and you are conducting a behavioural interview. You have a rating system from 0 (weakest response) to 5 (strongest response) with the possibility of 0.5, 1.5, 2.5, 3.5, and 4.5 ratings depending on the interviewee answer. Please provide a json object with only a rating and feedback, including areas of improvement, that addresses the interviewee to this interview question and response
-              \n Question: ${props.question}
-              \n Answer: ${props.userAnswer}`,
-        temperature: 0,
-        max_tokens: 2000,
-      });
-
-      setapiResponse(response.data.choices[0].text);
-
-      console.log(response);
-      console.log(response.data.choices[0].text);
-      console.log("the parsed jsonObject is below");
+    const fetchFeedback = async () => {
+      setIsLoading(true);
       try {
-        const responseText = response.data.choices[0].text;
-        const secondHalfString = responseText.split("{")[1];
-        const fixedString = "{" + secondHalfString;
-        // console.log("the response", ;
-        const jsonObject = JSON.parse(fixedString);
-        console.log("jsonObject");
-        console.log(jsonObject);
-        setRating(jsonObject.rating);
-        setFeedback(jsonObject.feedback);
-      } catch {}
-    })();
-  }, []);
+        const response = await fetch("http://localhost:3001/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ question, answer: userAnswer }),
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setFeedbackData(data);
+      } catch (error) {
+        setError("An error occurred while fetching feedback");
+        console.error("Error fetching feedback:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFeedback();
+  }, [question, userAnswer]);
 
   return (
-    <div>
-      <p className="text-3xl">Results</p>
-      <br></br>
-      <p>Question: {props.question}</p>
-      <br></br>
-      {/* <p>this is the results page component</p> */}
-      {/* <p>{rating}</p> */}
-      <p>Rating: {"⭐".repeat(Math.trunc(parseInt(rating)))}</p>
-      <br></br>
-      <p>Feedback: {feedback}</p>
-      <br></br>
-      <p>Your transcribed answer: {props.userAnswer}</p>
-      <br></br>
-      <button
-        onClick={() => {
-          setDebug(!debug);
-        }}
-      >
-        {debug ? "hide debug data" : "show debug data"}
-      </button>
-      {debug ? <p>{apiResponse}</p> : <></>}
+    <div className="flex flex-col items-center justify-center w-full h-screen bg-gray-100 p-6">
+      <div className="bg-white shadow-xl rounded-lg p-6 max-w-md w-full text-center">
+        <h1 className="text-3xl font-bold mb-4">Results</h1>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error: {error}</p>
+        ) : (
+          <>
+            <p className="mb-4">
+              <span className="font-semibold">Question:</span> {question}
+            </p>
+            <p className="mb-4">
+              <span className="font-semibold">Your Answer:</span> {userAnswer}
+            </p>
+            {feedbackData && (
+              <>
+                <p className="mb-4">
+                  <span className="font-semibold">Rating:</span>{" "}
+                  {"⭐".repeat(feedbackData.rating)}
+                </p>
+                <p className="mb-4">
+                  <span className="font-semibold">Feedback:</span>{" "}
+                  {feedbackData.feedback}
+                </p>
+              </>
+            )}
+            <button
+              onClick={() => setCurrentState("start")}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
+            >
+              Try Another Question
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default Results;

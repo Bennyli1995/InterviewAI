@@ -7,7 +7,6 @@ export function Respond({
   setCurrentState,
   question,
   setUserAnswer,
-  setFeedback,
 }: RespondProps) {
   const [transcribedText, setTranscribedText] = useState("");
   const [isRecording, setIsRecording] = useState(false);
@@ -53,7 +52,6 @@ export function Respond({
   const handleRestart = () => {
     setTranscribedText("");
     setUserAnswer("");
-    setFeedback({});
     setCurrentState("start");
   };
 

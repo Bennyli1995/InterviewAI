@@ -3,16 +3,21 @@ import multer from 'multer';
 import cors from 'cors';
 import { SpeechClient } from '@google-cloud/speech';
 import dotenv from 'dotenv';
+import OpenAI from 'openai';
 
+// Load environment variables from .env file
 dotenv.config();
 
-// Path to your Google Cloud credentials
-process.env.GOOGLE_APPLICATION_CREDENTIALS = "path/to/your/google-cloud-service-account.json";
+// OpenAI configuration
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
 const app = express();
 const speechClient = new SpeechClient();
 const upload = multer({ storage: multer.memoryStorage() });
 
+// Enable CORS and JSON body parsing
 app.use(cors());
 app.use(express.json());
 
@@ -56,35 +61,64 @@ app.get('/questions', (req: Request, res: Response) => {
 
 // Endpoint to handle audio transcription
 app.post('/transcribe', upload.single('audio'), async (req: Request, res: Response) => {
-    if (!req.file) {
-      return res.status(400).send('No audio file uploaded.');
-    }
-  
-    const audioBytes = req.file.buffer.toString('base64');
-    const audio = {
-      content: audioBytes,
-    };
-    const config = {
-      encoding: 'LINEAR16' as const, // Change here to match the actual type
-      sampleRateHertz: 16000,
-      languageCode: 'en-US',
-    };
-    const request = {
-      audio: audio,
-      config: config,
-    };
-  
-    try {
-      const [response] = await speechClient.recognize(request);
-      const transcription = response.results!
-        .map((result: any) => result.alternatives[0].transcript)
-        .join('\n');
-      res.json({ transcript: transcription });
-    } catch (error) {
-      console.error('Speech-to-text error:', error);
-      res.status(500).send('Error processing the audio file.');
-    }
-  });
+  if (!req.file) {
+    return res.status(400).send('No audio file uploaded.');
+  }
+
+  const audioBytes = req.file.buffer.toString('base64');
+  const audio = { content: audioBytes };
+  const config = {
+    encoding: 'LINEAR16' as const,
+    sampleRateHertz: 48000,
+    languageCode: 'en-US',
+  };
+  const request = {
+    audio: audio,
+    config: config,
+  };
+
+  try {
+    const [response] = await speechClient.recognize(request);
+    const transcription = response.results!
+      .map((result: any) => result.alternatives[0].transcript)
+      .join('\n');
+    res.json({ transcript: transcription });
+  } catch (error) {
+    console.error('Speech-to-text error:', error);
+    res.status(500).send('Error processing the audio file.');
+  }
+});
+
+// Analyze endpoint
+app.post('/analyze', async (req: Request, res: Response) => {
+  console.log(req.body);
+  const { question, answer } = req.body;
+
+  if (!question || !answer) {
+    return res.status(400).json({ error: 'Question and answer are required.' });
+  }
+
+  try {
+    const prompt = `You are the interviewer at a company and you are conducting a behavioural interview. You have a rating system from 0 (weakest response) to 5 (strongest response) with the possibility of 0.5, 1.5, 2.5, 3.5, and 4.5 ratings depending on the interviewee answer. Please provide a json object with only a rating and feedback, including areas of improvement, that addresses the interviewee to this interview question and response
+\nQuestion: ${question}
+\nAnswer: ${answer}`;
+
+    const response = await openai.completions.create({
+      model: "text-davinci-003",
+      prompt,
+      max_tokens: 2000,
+    });
+
+    const data = response.choices[0].text;
+    // Extracting JSON from the response (assuming the response is in the correct format)
+    const feedback = JSON.parse(data.substring(data.indexOf('{')));
+    
+    res.json(feedback);
+  } catch (error) {
+    console.error('Error with OpenAI API:', error);
+    res.status(500).json({ error: 'Error processing the feedback.' });
+  }
+});
 
 // Define the port number and start the server
 const PORT = process.env.PORT || 3001;
