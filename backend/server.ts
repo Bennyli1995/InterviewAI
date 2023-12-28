@@ -68,7 +68,6 @@ app.post('/transcribe', upload.single('audio'), async (req: Request, res: Respon
   if (!req.file) {
     return res.status(400).send('No audio file uploaded.');
   }
-  console.log(req.file);
   const audioBytes = req.file.buffer.toString('base64');
   const audio = { content: audioBytes };
   const config = {
@@ -84,7 +83,6 @@ app.post('/transcribe', upload.single('audio'), async (req: Request, res: Respon
 
   try {
     const [response] = await client.recognize(request);
-    console.log(response);
     const transcription = response.results!
       .map((result: any) => result.alternatives[0].transcript)
       .join('\n');
