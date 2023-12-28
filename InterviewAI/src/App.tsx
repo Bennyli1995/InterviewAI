@@ -3,6 +3,10 @@ import { Respond } from "./states/Respond";
 import Results from "./states/Results";
 import { Start } from "./states/Start";
 import { PossibleState } from "./types";
+import Navbar from "./components/Navbar";
+import HeroSection from "./components/HeroSection";
+import FeaturesSection from "./components/FeatureSection";
+import Footer from "./components/Footer";
 
 function App() {
   const [currentState, setCurrentState] = useState<PossibleState>("start");
@@ -36,6 +40,11 @@ function App() {
   return (
     <div className="w-full h-full items-center justify-center">
       <div>
+        <Navbar />
+        <HeroSection />
+        <FeaturesSection />
+      </div>
+      <div>
         {currentState === "start" && (
           <Start
             setCurrentState={setCurrentState}
@@ -57,6 +66,9 @@ function App() {
             userAnswer={userAnswer}
           />
         )}
+      </div>
+      <div>
+        <Footer />
       </div>
     </div>
   );
