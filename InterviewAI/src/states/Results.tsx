@@ -47,9 +47,9 @@ const Results: React.FC<ResultsProps> = ({
   }, [question, userAnswer]);
 
   return (
-    <div className="flex items-center justify-center h-screen w-full">
-      <div className="bg-white shadow-xl rounded-lg p-6 max-w-2xl w-full text-center">
-        <h1 className="text-3xl font-bold mb-6">Results</h1>
+    <div className="flex items-center justify-center h-screen w-full bg-gradient-to-r from-blue-100 to-green-100">
+      <div className="bg-white/90 backdrop-blur-md shadow-xl rounded-lg p-6 max-w-2xl w-full text-center">
+        <h1 className="text-3xl font-bold mb-6 text-blue-600">Results</h1>
         {isLoading ? (
           <p className="text-gray-600">Loading...</p>
         ) : error ? (
