@@ -103,13 +103,18 @@ app.post('/analyze', async (req: Request, res: Response) => {
   }
 
   try {
-    const prompt = `You are the interviewer at a company, and you are conducting a behavioral interview. You have a rating system from 0 (weakest response) to 5 (strongest response) with the possibility of 0.5, 1.5, 2.5, 3.5, and 4.5 ratings depending on the interviewee's answer. Your task is to provide a valid JSON object with the following structure:
+    const prompt = `You are the interviewer at a company, conducting a behavioral interview using the STAR (Situation, Task, Action, Result) format. Your rating system ranges from 0 (weakest response) to 5 (strongest response), with possibilities for 0.5, 1.5, 2.5, 3.5, and 4.5 ratings based on the interviewee's answer. Your task is to provide a valid JSON object with the following structure:
     {
       "rating": X, // Replace X with the appropriate rating
-      "feedback": "Provide constructive feedback here",
-      "areas_for_improvement": ["List areas for improvement here"]
+      "feedback": {
+        "situation": Feedback on how well the interviewee described the situation,
+        "task": Feedback on the clarity of the task describe",
+        "action": Feedback on the effectiveness of the action taken,
+        "result": Feedback on the relevance and impact of the result achieved
+      },
+      "areas_for_improvement": ["List specific areas for improvement, focusing on the STAR elements"]
     }
-    Please ensure that the provided JSON is valid and adheres to the specified structure. Evaluate the interviewee's response to this interview question and provide a rating, constructive feedback, and areas for improvement based on the question and response.
+    Please ensure that the JSON is valid and adheres to the specified structure. Evaluate the interviewee's response to this interview question and provide a rating, along with detailed and constructive feedback, based on the STAR format.
     \nQuestion: ${question}
     \nAnswer: ${answer}`;
 
