@@ -40,8 +40,10 @@ export function Respond({
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
+        console.log(data);
         setTranscribedText(data.transcript);
         setUserAnswer(data.transcript);
+        console.log(data.transcript);
         setCurrentState("results");
       } catch (error) {
         console.error("Error during transcription:", error);

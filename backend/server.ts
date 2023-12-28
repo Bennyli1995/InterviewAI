@@ -8,6 +8,10 @@ import OpenAI from 'openai';
 // Load environment variables from .env file
 dotenv.config();
 
+const speech = require('@google-cloud/speech');
+
+const client = new speech.SpeechClient();
+
 // OpenAI configuration
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -64,13 +68,14 @@ app.post('/transcribe', upload.single('audio'), async (req: Request, res: Respon
   if (!req.file) {
     return res.status(400).send('No audio file uploaded.');
   }
-
+  console.log(req.file);
   const audioBytes = req.file.buffer.toString('base64');
   const audio = { content: audioBytes };
   const config = {
-    encoding: 'LINEAR16' as const,
+    encoding: 'WAV',
     sampleRateHertz: 48000,
     languageCode: 'en-US',
+    enableWordTimeOffsets: true,
   };
   const request = {
     audio: audio,
@@ -78,11 +83,13 @@ app.post('/transcribe', upload.single('audio'), async (req: Request, res: Respon
   };
 
   try {
-    const [response] = await speechClient.recognize(request);
+    const [response] = await client.recognize(request);
+    console.log(response);
     const transcription = response.results!
       .map((result: any) => result.alternatives[0].transcript)
       .join('\n');
     res.json({ transcript: transcription });
+    console.log(transcription);
   } catch (error) {
     console.error('Speech-to-text error:', error);
     res.status(500).send('Error processing the audio file.');
@@ -91,7 +98,6 @@ app.post('/transcribe', upload.single('audio'), async (req: Request, res: Respon
 
 // Analyze endpoint
 app.post('/analyze', async (req: Request, res: Response) => {
-  console.log(req.body);
   const { question, answer } = req.body;
 
   if (!question || !answer) {
