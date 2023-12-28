@@ -103,9 +103,15 @@ app.post('/analyze', async (req: Request, res: Response) => {
   }
 
   try {
-    const prompt = `You are the interviewer at a company and you are conducting a behavioural interview. You have a rating system from 0 (weakest response) to 5 (strongest response) with the possibility of 0.5, 1.5, 2.5, 3.5, and 4.5 ratings depending on the interviewee answer. Please provide a json object with only a rating and feedback, including areas of improvement, that addresses the interviewee to this interview question and response
-\nQuestion: ${question}
-\nAnswer: ${answer}`;
+    const prompt = `You are the interviewer at a company, and you are conducting a behavioral interview. You have a rating system from 0 (weakest response) to 5 (strongest response) with the possibility of 0.5, 1.5, 2.5, 3.5, and 4.5 ratings depending on the interviewee's answer. Your task is to provide a valid JSON object with the following structure:
+    {
+      "rating": X, // Replace X with the appropriate rating
+      "feedback": "Provide constructive feedback here",
+      "areas_for_improvement": ["List areas for improvement here"]
+    }
+    Please ensure that the provided JSON is valid and adheres to the specified structure. Evaluate the interviewee's response to this interview question and provide a rating, constructive feedback, and areas for improvement based on the question and response.
+    \nQuestion: ${question}
+    \nAnswer: ${answer}`;
 
     const response = await openai.completions.create({
       model: "text-davinci-003",

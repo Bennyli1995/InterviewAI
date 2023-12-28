@@ -41,33 +41,46 @@ const Results: React.FC<ResultsProps> = ({
   }, [question, userAnswer]);
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-screen bg-gray-100 p-6">
+    <div className="flex items-center justify-center h-screen">
       <div className="bg-white shadow-xl rounded-lg p-6 max-w-md w-full text-center">
-        <h1 className="text-3xl font-bold mb-4">Results</h1>
+        <h1 className="text-3xl font-bold mb-6">Results</h1>
         {isLoading ? (
-          <p>Loading...</p>
+          <p className="text-gray-600">Loading...</p>
         ) : error ? (
-          <p>Error: {error}</p>
+          <p className="text-red-600">Error: {error}</p>
         ) : (
           <>
-            <p className="mb-4">
-              <span className="font-semibold">Question:</span> {question}
-            </p>
-            <p className="mb-4">
-              <span className="font-semibold">Your Answer:</span> {userAnswer}
-            </p>
+            <div className="mb-6">
+              <p className="text-xl font-semibold">Question:</p>
+              <p className="text-gray-700">{question}</p>
+            </div>
+            <div className="mb-6">
+              <p className="text-xl font-semibold">Your Answer:</p>
+              <p className="text-gray-700">{userAnswer}</p>
+            </div>
             {feedbackData && (
-              <>
-                <p className="mb-4">
-                  <span className="font-semibold">Rating:</span>{" "}
-                  {"⭐".repeat(feedbackData.rating)}
-                </p>
-                <p className="mb-4">
-                  <span className="font-semibold">Feedback:</span>{" "}
-                  {feedbackData.feedback}
-                </p>
-              </>
+              <div className="mb-6">
+                <p className="text-xl font-semibold">Rating:</p>
+                <div className="flex justify-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                      key={star}
+                      className={`text-3xl ${
+                        star <= feedbackData.rating
+                          ? "text-yellow-500"
+                          : "text-gray-300"
+                      }`}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+              </div>
             )}
+            <div className="mb-6">
+              <p className="text-xl font-semibold">Feedback:</p>
+              <p className="text-gray-700">{feedbackData.feedback}</p>
+            </div>
             <button
               onClick={() => setCurrentState("start")}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"

@@ -40,10 +40,8 @@ export function Respond({
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        console.log(data);
         setTranscribedText(data.transcript);
         setUserAnswer(data.transcript);
-        console.log(data.transcript);
         setCurrentState("results");
       } catch (error) {
         console.error("Error during transcription:", error);
@@ -58,46 +56,56 @@ export function Respond({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-screen bg-gray-100 p-6">
-      <div className="flex flex-col bg-white shadow-xl rounded-lg p-6 max-w-md w-full text-center items-center">
-        <p className="text-xl font-semibold mb-4">Question:</p>
-        <p className="text-lg mb-6">{question}</p>
+    <div
+      className="flex flex-col items-center justify-center w-full h-screen p-6"
+      style={{ background: "linear-gradient(135deg, #E2E8F0, #EDF2F7)" }}
+    >
+      <div className="flex flex-col bg-white shadow-xl rounded-xl p-6 max-w-md w-full text-center items-center">
+        <h2
+          className="text-2xl font-semibold mb-4"
+          style={{ color: "#2B6CB0" }}
+        >
+          Interview Question
+        </h2>
+        <p className="text-lg mb-6 font-medium">{question}</p>
         <MdMic
-          className={`w-24 h-24 ${
-            isRecording ? "text-red-600" : "text-gray-600"
-          } mb-4`}
+          className={`w-24 h-24 mb-4 transition duration-500 ease-in-out ${
+            isRecording ? "text-red-500 animate-pulse" : "text-blue-500"
+          }`}
         />
-        {isRecording ? (
+        <div className="flex flex-col space-y-4 w-full">
+          {isRecording ? (
+            <button
+              onClick={handleStopRecording}
+              className="px-6 py-3 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition duration-200 ease-in-out transform hover:scale-105"
+            >
+              Stop Recording
+            </button>
+          ) : (
+            <button
+              onClick={handleStartRecording}
+              className="px-6 py-3 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition duration-200 ease-in-out transform hover:scale-105"
+            >
+              Start Recording
+            </button>
+          )}
           <button
-            onClick={handleStopRecording}
-            className="px-4 py-2 bg-red-600 text-white rounded-md mb-4 hover:bg-red-700 transition duration-200"
+            onClick={handleSubmit}
+            className="px-6 py-3 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition duration-200 ease-in-out transform hover:scale-105"
           >
-            Stop Recording
+            Submit Response
           </button>
-        ) : (
           <button
-            onClick={handleStartRecording}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md mb-4 hover:bg-blue-700 transition duration-200"
+            onClick={handleRestart}
+            className="px-6 py-3 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500 transition duration-200 ease-in-out transform hover:scale-105"
           >
-            Start Recording
+            Try Another Question
           </button>
-        )}
-        <button
-          onClick={handleSubmit}
-          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200 mb-4"
-        >
-          Submit Response
-        </button>
-        <button
-          onClick={handleRestart}
-          className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200"
-        >
-          Try Another Question
-        </button>
+        </div>
         {transcribedText && (
-          <div className="mt-6 p-4 bg-gray-200 rounded-md">
-            <p className="text-sm font-medium">Transcribed Text:</p>
-            <p className="text-sm">{transcribedText}</p>
+          <div className="mt-6 p-4 bg-blue-100 rounded-xl shadow-inner">
+            <p className="text-sm font-medium text-gray-700">Your Answer:</p>
+            <p className="text-sm text-gray-600">{transcribedText}</p>
           </div>
         )}
       </div>
