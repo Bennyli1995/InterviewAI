@@ -47,8 +47,8 @@ const Results: React.FC<ResultsProps> = ({
   }, [question, userAnswer]);
 
   return (
-    <div className="flex items-center justify-center h-screen w-full bg-gradient-to-r from-blue-100 to-green-100">
-      <div className="bg-white/90 backdrop-blur-md shadow-xl rounded-lg p-6 max-w-2xl w-full text-center">
+    <div className="flex items-center justify-center">
+      <div className="bg-gradient-to-r from-blue-100 to-green-100 backdrop-blur-md shadow-xl rounded-lg p-6 max-w-4xl text-center">
         <h1 className="text-3xl font-bold mb-6 text-blue-600">Results</h1>
         {isLoading ? (
           <p className="text-gray-600">Loading...</p>
@@ -57,17 +57,17 @@ const Results: React.FC<ResultsProps> = ({
         ) : (
           <>
             <div className="mb-6">
-              <p className="text-xl font-semibold">Question:</p>
+              <p className="text-xl font-semibold mb-4">Question:</p>
               <p className="text-gray-700">{question}</p>
             </div>
             <div className="mb-6">
-              <p className="text-xl font-semibold">Your Answer:</p>
+              <p className="text-xl font-semibold mb-4">Your Answer:</p>
               <p className="text-gray-700">{userAnswer}</p>
             </div>
             {feedbackData && (
               <>
                 <div className="mb-6">
-                  <p className="text-xl font-semibold">Rating:</p>
+                  <p className="text-xl font-semibold mb-4">Rating:</p>
                   <div className="flex justify-center">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <span
@@ -84,7 +84,7 @@ const Results: React.FC<ResultsProps> = ({
                   </div>
                 </div>
                 <div className="mb-6">
-                  <p className="text-xl font-semibold">Feedback:</p>
+                  <p className="text-xl font-semibold mb-4">Feedback:</p>
                   <ul className="text-gray-700 text-left">
                     <li>
                       <strong>Situation:</strong>{" "}
@@ -102,7 +102,7 @@ const Results: React.FC<ResultsProps> = ({
                   </ul>
                 </div>
                 <div className="mb-6">
-                  <p className="text-xl font-semibold">
+                  <p className="text-xl font-semibold mb-4">
                     Areas for Improvement:
                   </p>
                   <ul className="text-gray-700 text-left">

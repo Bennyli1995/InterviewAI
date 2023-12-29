@@ -56,11 +56,11 @@ export function Respond({
   };
 
   return (
-    <div
-      className="flex flex-col items-center justify-center w-full h-screen p-6"
-      style={{ background: "linear-gradient(135deg, #E2E8F0, #EDF2F7)" }}
-    >
-      <div className="flex flex-col bg-white shadow-xl rounded-xl p-6 max-w-md w-full text-center items-center">
+    <div className="flex flex-col items-center justify-center">
+      <div
+        className="flex flex-col bg-white shadow-xl rounded-xl p-6 max-w-4xl text-center items-center"
+        style={{ background: "linear-gradient(135deg, #E2E8F0, #EDF2F7)" }}
+      >
         <h2
           className="text-2xl font-semibold mb-4"
           style={{ color: "#2B6CB0" }}

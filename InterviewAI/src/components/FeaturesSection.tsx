@@ -22,7 +22,7 @@ const FeatureCard: React.FC<{
 
 const FeaturesSection: React.FC = () => {
   return (
-    <div className="py-12">
+    <div className="py-20">
       <h2 className="text-2xl font-bold text-center mb-10">Why InterviewAI?</h2>
       <div className="flex flex-col md:flex-row justify-center items-stretch">
         <FeatureCard

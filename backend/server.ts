@@ -5,14 +5,12 @@ import { SpeechClient } from '@google-cloud/speech';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
 
-// Load environment variables from .env file
 dotenv.config();
 
 const speech = require('@google-cloud/speech');
 
 const client = new speech.SpeechClient();
 
-// OpenAI configuration
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
@@ -103,23 +101,23 @@ app.post('/analyze', async (req: Request, res: Response) => {
   }
 
   try {
-    const prompt = `You are the interviewer at a company, conducting a behavioral interview using the STAR (Situation, Task, Action, Result) format. Your rating system ranges from 0 (weakest response) to 5 (strongest response), with possibilities for 0.5, 1.5, 2.5, 3.5, and 4.5 ratings based on the interviewee's answer. Your task is to provide a valid JSON object with the following structure:
+    const prompt = `Act like a leading hiring manager at a FAANG tech company, conducting a behavioral interview using the STAR (Situation, Task, Action, Result) format. Your rating system ranges from 0 (weakest response) to 5 (strongest response), with possibilities for 0.5, 1.5, 2.5, 3.5, and 4.5 ratings based on the interviewee's answer. Your task is to provide a valid JSON object with the following structure:
     {
       "rating": X, // Replace X with the appropriate rating
       "feedback": {
-        "situation": Feedback on how well the interviewee described the situation,
-        "task": Feedback on the clarity of the task describe",
-        "action": Feedback on the effectiveness of the action taken,
-        "result": Feedback on the relevance and impact of the result achieved
+        "situation": Feedback on how well the interviewee described the situation in detail,
+        "task": Feedback on the clarity of the task described in detail,
+        "action": Feedback on the effectiveness of the action taken in detail,
+        "result": Feedback on the relevance and impact of the result achieved in detail
       },
-      "areas_for_improvement": ["List specific areas for improvement, focusing on the STAR elements"]
+      "areas_for_improvement": ["List specific areas for improvement, focusing on the STAR elements, be specific"]
     }
-    Please ensure that the JSON is valid and adheres to the specified structure. Evaluate the interviewee's response to this interview question and provide a rating, along with detailed and constructive feedback, based on the STAR format.
+    Please ensure that the JSON is valid and adheres to the specified structure. Evaluate the interviewee's response to this interview question and provide a rating, along with detailed and constructive feedback, based on the STAR format. Finally, make a decision of hire / no hire after all.
     \nQuestion: ${question}
     \nAnswer: ${answer}`;
 
     const response = await openai.completions.create({
-      model: "text-davinci-003",
+      model: "gpt-4 turbo",
       prompt,
       max_tokens: 2000,
     });

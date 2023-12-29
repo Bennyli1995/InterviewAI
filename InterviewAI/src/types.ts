@@ -1,4 +1,4 @@
-export type PossibleState = "start" | "respond" | "results";
+export type PossibleState = "start" | "respond" | "results" | "hero";
 
 export interface StartProps {
   setCurrentState: (state: PossibleState) => void;

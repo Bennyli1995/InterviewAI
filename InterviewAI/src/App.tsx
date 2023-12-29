@@ -1,18 +1,17 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Respond } from "./states/Respond";
 import Results from "./states/Results";
-import { Start } from "./states/Start";
+import Start from "./states/Start";
 import { PossibleState } from "./types";
 import Navbar from "./components/Navbar";
 import HeroSection from "./components/HeroSection";
-import FeaturesSection from "./components/FeatureSection";
+import FeaturesSection from "./components/FeaturesSection";
 import Footer from "./components/Footer";
 
 function App() {
-  const [currentState, setCurrentState] = useState<PossibleState>("start");
+  const [currentState, setCurrentState] = useState<PossibleState>("hero");
   const [question, setQuestion] = useState<string>("");
   const [userAnswer, setUserAnswer] = useState<string>("");
-  // const [feedback, setFeedback] = useState<object>({});
   const [questions, setQuestions] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
@@ -23,7 +22,6 @@ function App() {
       .then((data) => {
         if (data.questions && data.questions.length > 0) {
           setQuestions(data.questions);
-          setQuestion(data.questions[0]); // Set a default question
           setLoading(false);
         }
       })
@@ -38,38 +36,36 @@ function App() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="w-full h-full items-center justify-center">
-      <div>
-        <Navbar />
-        <HeroSection />
-        <FeaturesSection />
-      </div>
-      <div>
-        {currentState === "start" && (
-          <Start
-            setCurrentState={setCurrentState}
-            setQuestion={setQuestion}
-            questions={questions} // Pass the list of questions
-          />
-        )}
-        {currentState === "respond" && (
-          <Respond
-            setCurrentState={setCurrentState}
-            question={question}
-            setUserAnswer={setUserAnswer}
-          />
-        )}
-        {currentState === "results" && (
-          <Results
-            setCurrentState={setCurrentState}
-            question={question}
-            userAnswer={userAnswer}
-          />
-        )}
-      </div>
-      <div>
-        <Footer />
-      </div>
+    <div className="flex flex-col min-h-screen justify-between">
+      <Navbar />
+      {currentState === "hero" && (
+        <>
+          <HeroSection setCurrentState={setCurrentState} />
+          <FeaturesSection setCurrentState={setCurrentState} />
+        </>
+      )}
+      {currentState === "start" && (
+        <Start
+          setCurrentState={setCurrentState}
+          setQuestion={setQuestion}
+          questions={questions}
+        />
+      )}
+      {currentState === "respond" && (
+        <Respond
+          setCurrentState={setCurrentState}
+          question={question}
+          setUserAnswer={setUserAnswer}
+        />
+      )}
+      {currentState === "results" && (
+        <Results
+          setCurrentState={setCurrentState}
+          question={question}
+          userAnswer={userAnswer}
+        />
+      )}
+      <Footer />
     </div>
   );
 }
