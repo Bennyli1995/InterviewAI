@@ -15,7 +15,7 @@ const HeroSection: React.FC<{ setCurrentState: (state: string) => void }> = ({
   };
 
   return (
-    <div className="bg-purple-600 text-white text-center py-28">
+    <div className="bg-purple-600 text-white text-center py-20">
       <h1 className="text-4xl font-bold mb-6">Crack every type of interview</h1>
       <p className="mb-8">What do you want to crack first?</p>
       <div className="flex justify-center gap-4">
